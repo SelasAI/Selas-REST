@@ -5,26 +5,310 @@ const selas = require("@selas/selas-node");
 // https://firebase.google.com/docs/functions/get-started
 
 exports.helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", { structuredData: true });
-  response.send("Hello from Firebase!");
+  //functions.logger.info("Hello logs!", { structuredData: true });
+  return response.send("Hello from Firebase!");
 });
 
-exports.generate_image = functions.https.onRequest(async (req, res) => {
+exports.getServiceList = functions.https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],}
+
+  if ("app_user_external_id" in request.body)
+    credentials['app_user_external_id'] = request.body["app_user_external_id"];
+
+  const client = await selas.createSelasClient(credentials);
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.getServiceList());
+});
+
+exports.getAddOnList = functions.https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],}
+
+  if ("app_user_external_id" in request.body)
+    credentials['app_user_external_id'] = request.body["app_user_external_id"];
+
+  const client = await selas.createSelasClient(credentials);
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.getAddOnList());
+});
+
+/***************  USER METHODS  ***************/
+
+
+
+exports.createAppUser = functions.https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
-    app_id: req.body["app_id"],
-    key: req.body["key"],
-    secret: req.body["secret"],
-  });
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
 
-  res.set("Content-Type", "application/json");
+  response.set("Content-Type", "application/json");
 
-  function my_callback(response) {
-    if ("result" in response) {
-      res.send(response.result[0].url);
+  return response.send(await client.createAppUser(request.body["external_id"]));
+});
+
+exports.isUser = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.isUser(request.body["external_id"]));
+});
+
+exports.createToken = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+  
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.createToken(request.body["app_user_external_id"]));
+});
+
+exports.deleteAllTokenOfAppUser = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+  
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.deleteAllTokenOfAppUser(request.body["app_user_external_id"]));
+});
+
+exports.getAppUserToken = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.getAppUserToken(request.body["app_user_external_id"]));
+});
+
+exports.setCredits = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.setCredits(request.body["app_user_external_id"], request.body["amount"]));
+});
+
+exports.getAppUserCredits = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+  
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.getAppUserCredits(request.body["app_user_external_id"]));
+});
+
+exports.getAppUserJobHistory = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.getAppUserJobHistory(request.body["app_user_external_id"]));
+});
+
+/***************  ADD-ONS METHODS  ***************/
+
+exports.shareAddOn = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.shareAddOn(request.body["add_on_name"], request.body["app_user_external_id"]));
+});
+
+exports.deleteAddOn = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.deleteAddOn(request.body["add_on_name"]));
+});
+
+exports.renameAddOn = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.renameAddOn(request.body["add_on_name"], request.body["new_add_on_name"]));
+});
+
+exports.publishAddOn = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.publishAddOn(request.body["add_on_name"]));
+});
+
+exports.unpublishAddOn = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.unpublishAddOn(request.body["add_on_name"]));
+});
+
+/***************  JOB METHODS  ***************/
+
+exports.getResult = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.getResult(request.body["job_id"]));
+});
+
+exports.costStableDiffusion = functions.https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],}
+
+  if ("app_user_external_id" in request.body)
+    credentials['app_user_external_id'] = request.body["app_user_external_id"];
+
+  const client = await selas.createSelasClient(credentials);
+
+  response.set("text", "application/json");
+
+  return response.send(await client.costStableDiffusion(request.body["prompt"], request.body));
+});
+
+exports.runStableDiffusion = functions.https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],}
+
+  if ("app_user_external_id" in request.body)
+    credentials['app_user_external_id'] = request.body["app_user_external_id"];
+
+  const client = await selas.createSelasClient(credentials);
+
+  response.set("Content-Type", "application/json");
+
+  function my_callback(feedback) {
+    if ("result" in feedback) {
+      return response.send(feedback.result);
     }
   }
 
-  await client.runStableDiffusion(req.body["prompt"], {
-    callback: my_callback,
+  var param = request.body;
+  param["callback"] = my_callback;
+
+  await client.runStableDiffusion(request.body["prompt"], param);
+});
+
+exports.costPatchTrainer = functions.https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],}
+  
+  if ("app_user_external_id" in request.body)
+    credentials['app_user_external_id'] = request.body["app_user_external_id"];
+
+  const client = await selas.createSelasClient(credentials);
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.costPatchTrainer(request.body["dataset"], request.body["request"], request.body));
+});
+
+exports.runPatchTrainer = functions.https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],}
+  
+  if ("app_user_external_id" in request.body)
+    credentials['app_user_external_id'] = request.body["app_user_external_id"];
+
+  const client = await selas.createSelasClient(credentials);
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.runPatchTrainer(request.body["dataset"], request.body["request"], request.body));
+});
+
+exports.getCountActiveWorker = functions.https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],});
+
+  response.set("Content-Type", "application/json");
+
+  return response.send(await client.getCountActiveWorker());
+});
+  
+
+exports.generate_image = functions.https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],}
+
+  if ("app_user_external_id" in request.body)
+    credentials['app_user_external_id'] = request.body["app_user_external_id"];
+
+  const client = await selas.createSelasClient(credentials);
+
+  response.set("Content-Type", "application/json");
+
+  function my_callback(feedback) {
+    if ("result" in feedback) {
+      return response.send(feedback.result);
+    }
+  }
+  
+  await client.runStableDiffusion(request.body["prompt"], {
+    "callback": my_callback,
   });
 });
+
