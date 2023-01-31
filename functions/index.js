@@ -100,7 +100,7 @@ exports.getAppUserToken = functions.https.onRequest(async (request, response) =>
   return response.send(await client.getAppUserToken(request.body["app_user_external_id"]));
 });
 
-exports.setCredits = functions.https.onRequest(async (request, response) => {
+exports.setCredit = functions.https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -108,7 +108,7 @@ exports.setCredits = functions.https.onRequest(async (request, response) => {
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.setCredits(request.body["app_user_external_id"], request.body["amount"]));
+  return response.send(await client.setCredit(request.body["app_user_external_id"], request.body["amount"]));
 });
 
 exports.getAppUserCredits = functions.https.onRequest(async (request, response) => {
@@ -130,7 +130,10 @@ exports.getAppUserJobHistory = functions.https.onRequest(async (request, respons
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.getAppUserJobHistory(request.body["app_user_external_id"]));
+  return response.send(await client.getAppUserJobHistory(
+    request.body["app_user_external_id"],
+    request.body["p_limit"],
+    request.body["p_offset"]));
 });
 
 /***************  ADD-ONS METHODS  ***************/
@@ -214,9 +217,11 @@ exports.costStableDiffusion = functions.https.onRequest(async (request, response
 
   const client = await selas.createSelasClient(credentials);
 
-  response.set("text", "application/json");
+  response.set("Content-Type", "application/json");
 
-  return response.send(await client.costStableDiffusion(request.body["prompt"], request.body));
+  const cost = await client.costStableDiffusion(request.body["prompt"], request.body);
+
+  return response.send({cost});
 });
 
 exports.runStableDiffusion = functions.https.onRequest(async (request, response) => {
@@ -257,7 +262,9 @@ exports.costPatchTrainer = functions.https.onRequest(async (request, response) =
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.costPatchTrainer(request.body["dataset"], request.body["request"], request.body));
+  const cost = await client.costPatchTrainer(request.body["dataset"], request.body["patch_name"], request.body);
+
+  return response.send({cost});
 });
 
 exports.runPatchTrainer = functions.https.onRequest(async (request, response) => {
@@ -273,7 +280,16 @@ exports.runPatchTrainer = functions.https.onRequest(async (request, response) =>
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.runPatchTrainer(request.body["dataset"], request.body["request"], request.body));
+  function my_callback(feedback) {
+    if ("result" in feedback) {
+      return response.send(feedback.result);
+    }
+  }
+
+  var param = request.body;
+  param["callback"] = my_callback;
+
+  return response.send(await client.runPatchTrainer(request.body["dataset"], request.body["patch_name"], param));
 });
 
 exports.getCountActiveWorker = functions.https.onRequest(async (request, response) => {
@@ -284,31 +300,7 @@ exports.getCountActiveWorker = functions.https.onRequest(async (request, respons
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.getCountActiveWorker());
+  const count = await client.getCountActiveWorker();
+
+  return response.send({count});
 });
-  
-
-exports.generate_image = functions.https.onRequest(async (request, response) => {
-  var credentials = {
-    app_id: request.body["app_id"],
-    key: request.body["key"],
-    secret: request.body["secret"],}
-
-  if ("app_user_external_id" in request.body)
-    credentials['app_user_external_id'] = request.body["app_user_external_id"];
-
-  const client = await selas.createSelasClient(credentials);
-
-  response.set("Content-Type", "application/json");
-
-  function my_callback(feedback) {
-    if ("result" in feedback) {
-      return response.send(feedback.result);
-    }
-  }
-  
-  await client.runStableDiffusion(request.body["prompt"], {
-    "callback": my_callback,
-  });
-});
-
