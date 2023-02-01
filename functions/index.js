@@ -4,12 +4,17 @@ const functions = require("firebase-functions");
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  //functions.logger.info("Hello logs!", { structuredData: true });
-  return response.send("Hello from Firebase!");
+const region = "europe-west1";
+
+const run_config= {timeoutSeconds: 60, memory: "128MB"}
+
+
+exports.helloWorld = functions.runWith(run_config).region(region).https.onRequest((request, response) => {
+  //functions.runWith(run_config).region(region).logger.info("Hello logs!", { structuredData: true });
+  return response.send("Hello from Spawn!");
 });
 
-exports.getServiceList = functions.https.onRequest(
+exports.getServiceList = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     var credentials = {
       app_id: request.body["app_id"],
@@ -18,8 +23,7 @@ exports.getServiceList = functions.https.onRequest(
     };
 
     if ("app_user_external_id" in request.body)
-      credentials["app_user_external_id"] =
-        request.body["app_user_external_id"];
+      credentials["app_user_external_id"] = request.body["app_user_external_id"];
 
     const client = await selas.createSelasClient(credentials);
 
@@ -29,7 +33,7 @@ exports.getServiceList = functions.https.onRequest(
   }
 );
 
-exports.getAddOnList = functions.https.onRequest(async (request, response) => {
+exports.getAddOnList = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   var credentials = {
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -48,7 +52,7 @@ exports.getAddOnList = functions.https.onRequest(async (request, response) => {
 
 /***************  USER METHODS  ***************/
 
-exports.createAppUser = functions.https.onRequest(async (request, response) => {
+exports.createAppUser = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -57,10 +61,10 @@ exports.createAppUser = functions.https.onRequest(async (request, response) => {
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.createAppUser(request.body["external_id"]));
+  return response.send(await client.createAppUser(request.body["app_user_external_id"]));
 });
 
-exports.isUser = functions.https.onRequest(async (request, response) => {
+exports.isUser = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -69,10 +73,10 @@ exports.isUser = functions.https.onRequest(async (request, response) => {
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.isUser(request.body["external_id"]));
+  return response.send(await client.isUser(request.body["app_user_external_id"]));
 });
 
-exports.createToken = functions.https.onRequest(async (request, response) => {
+exports.createToken = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -86,7 +90,7 @@ exports.createToken = functions.https.onRequest(async (request, response) => {
   );
 });
 
-exports.deleteAllTokenOfAppUser = functions.https.onRequest(
+exports.deleteAllTokenOfAppUser = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     const client = await selas.createSelasClient({
       app_id: request.body["app_id"],
@@ -102,7 +106,7 @@ exports.deleteAllTokenOfAppUser = functions.https.onRequest(
   }
 );
 
-exports.getAppUserToken = functions.https.onRequest(
+exports.getAppUserToken = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     const client = await selas.createSelasClient({
       app_id: request.body["app_id"],
@@ -118,7 +122,7 @@ exports.getAppUserToken = functions.https.onRequest(
   }
 );
 
-exports.setCredit = functions.https.onRequest(async (request, response) => {
+exports.setCredit = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -127,15 +131,12 @@ exports.setCredit = functions.https.onRequest(async (request, response) => {
 
   response.set("Content-Type", "application/json");
 
-  return response.send(
-    await client.setCredit(
-      request.body["app_user_external_id"],
-      request.body["amount"]
-    )
-  );
+  amount = await client.setCredit(request.body["app_user_external_id"], request.body["amount"]);
+
+  return response.send({amount});
 });
 
-exports.getAppUserCredits = functions.https.onRequest(
+exports.getAppUserCredits = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     const client = await selas.createSelasClient({
       app_id: request.body["app_id"],
@@ -145,13 +146,12 @@ exports.getAppUserCredits = functions.https.onRequest(
 
     response.set("Content-Type", "application/json");
 
-    return response.send(
-      await client.getAppUserCredits(request.body["app_user_external_id"])
-    );
+    amount = await client.getAppUserCredits(request.body["app_user_external_id"]);
+    return response.send({amount});
   }
 );
 
-exports.getAppUserJobHistory = functions.https.onRequest(
+exports.getAppUserJobHistory = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     const client = await selas.createSelasClient({
       app_id: request.body["app_id"],
@@ -173,7 +173,7 @@ exports.getAppUserJobHistory = functions.https.onRequest(
 
 /***************  ADD-ONS METHODS  ***************/
 
-exports.shareAddOn = functions.https.onRequest(async (request, response) => {
+exports.shareAddOn = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -190,7 +190,7 @@ exports.shareAddOn = functions.https.onRequest(async (request, response) => {
   );
 });
 
-exports.deleteAddOn = functions.https.onRequest(async (request, response) => {
+exports.deleteAddOn = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -202,7 +202,7 @@ exports.deleteAddOn = functions.https.onRequest(async (request, response) => {
   return response.send(await client.deleteAddOn(request.body["add_on_name"]));
 });
 
-exports.renameAddOn = functions.https.onRequest(async (request, response) => {
+exports.renameAddOn = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -219,7 +219,7 @@ exports.renameAddOn = functions.https.onRequest(async (request, response) => {
   );
 });
 
-exports.publishAddOn = functions.https.onRequest(async (request, response) => {
+exports.publishAddOn = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -231,7 +231,7 @@ exports.publishAddOn = functions.https.onRequest(async (request, response) => {
   return response.send(await client.publishAddOn(request.body["add_on_name"]));
 });
 
-exports.unpublishAddOn = functions.https.onRequest(
+exports.unpublishAddOn = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     const client = await selas.createSelasClient({
       app_id: request.body["app_id"],
@@ -249,7 +249,7 @@ exports.unpublishAddOn = functions.https.onRequest(
 
 /***************  JOB METHODS  ***************/
 
-exports.getResult = functions.https.onRequest(async (request, response) => {
+exports.getResult = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
   const client = await selas.createSelasClient({
     app_id: request.body["app_id"],
     key: request.body["key"],
@@ -261,7 +261,7 @@ exports.getResult = functions.https.onRequest(async (request, response) => {
   return response.send(await client.getResult(request.body["job_id"]));
 });
 
-exports.costStableDiffusion = functions.https.onRequest(
+exports.costStableDiffusion = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     var credentials = {
       app_id: request.body["app_id"],
@@ -286,7 +286,7 @@ exports.costStableDiffusion = functions.https.onRequest(
   }
 );
 
-exports.runStableDiffusion = functions.https.onRequest(
+exports.runStableDiffusion = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     var credentials = {
       app_id: request.body["app_id"],
@@ -315,7 +315,7 @@ exports.runStableDiffusion = functions.https.onRequest(
   }
 );
 
-exports.costPatchTrainer = functions.https.onRequest(
+exports.costPatchTrainer = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     var credentials = {
       app_id: request.body["app_id"],
@@ -341,7 +341,7 @@ exports.costPatchTrainer = functions.https.onRequest(
   }
 );
 
-exports.runPatchTrainer = functions.https.onRequest(
+exports.runPatchTrainer = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     var credentials = {
       app_id: request.body["app_id"],
@@ -376,7 +376,7 @@ exports.runPatchTrainer = functions.https.onRequest(
   }
 );
 
-exports.getCountActiveWorker = functions.https.onRequest(
+exports.getCountActiveWorker = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
     const client = await selas.createSelasClient({
       app_id: request.body["app_id"],
