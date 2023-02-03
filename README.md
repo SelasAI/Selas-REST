@@ -101,6 +101,17 @@ curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/createAppUser 
   "app_user_external_id": USER_ID}'
 ```
 
+To check if a user is already created, you can use the isUser method. It will return a boolean.
+```bash
+curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/isUser \
+-H "Content-Type: application/json" \
+-d '{"app_id": TEST_APP_ID, 
+  "key": TEST_APP_KEY,
+  "secret": TEST_APP_SECRET,
+  "app_user_external_id": USER_ID}'
+```
+
+
 Once a user is created, you can allow or deny the usage of paid services for this user. This is done by handling the tokens of the user. You can create a token for a user by providing the external id of the user.
 
 
@@ -123,6 +134,8 @@ curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/getAppUserToke
   "secret": TEST_APP_SECRET,
   "app_user_external_id": USER_ID}'
 ```
+
+curl -m 70 -X POST localhost:8081 -H "Content-Type: application/json" -d '{"job_id": '0de6aa8d-7ce5-47ae-82c8-f9cdb428288d'}'
 
 There is no need to give a token for every utilisation. Once a token is created, it remain active until it is deleted. If you need to deny the access to a user, you can delete all the tokens of the user.
 
