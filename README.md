@@ -88,7 +88,7 @@ curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/helloWorld \
 
 #### Authorizing or denying the access to the services
 
-Using the Selas-node client, you can manage how your customers can access our services. 
+Using the Spawn-node client, you can manage how your customers can access our services. 
 
 To allow a user to access our services, you first need to create an app user. During the creation, you need to provide an identifier that will be necessary to access to the usage data. It will be refered in this client as an external id. This external id can be an email, a username, a phone number, a crypto wallet address, etc. 
 
@@ -236,9 +236,9 @@ curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/deleteAddOn \
 
 ### Usage of IA services
 
-Even if this the Selas-node client is created to manage applications and its users, it has all the needed methods for running jobs on the Selas platform. When running jobs on Selas-node, you are seen as a super-user and do not have to use tokens or credit.
+Even if this the Spawn-node client is created to manage applications and its users, it has all the needed methods for running jobs on the Spawn platform. When running jobs on Spawn-node, you are seen as a super-user and do not have to use tokens or credit.
 
-To know how many workers are active on the Selas platform, you can use the getCountActiveWorker method. It will return the number of workers for each service.
+To know how many workers are active on the Spawn platform, you can use the getCountActiveWorker method. It will return the number of workers for each service.
 ```bash
 curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/getCountActiveWorker \
 -H "Content-Type: application/json" \
