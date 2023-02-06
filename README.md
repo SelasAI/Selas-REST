@@ -4,7 +4,7 @@ A REST API for the Spawn protocol.
 
 ## Overview
 
-Spawn-REST is a REST API for the Spawn protocol. It allows you to interact with the Spawn protocol through a REST API. It is built on top of the [Spawn-SDK](@selas/selas-node) and uses [Firebase Functions](@firebase/functions) to deploy the API. I is licensed under the [MIT License](https://opensource.org/licenses/MIT). The Spawn-REST API is currently in beta and is subject to change, but we will try to keep the changes to a minimum. Please report any issues or bugs you encounter.
+Spawn-REST is a REST API for the Spawn protocol. It allows you to interact with the Spawn protocol through a REST API. It is built on top of the [Spawn-SDK](@spawn-so/spawn-node) and uses [Firebase Functions](@firebase/functions) to deploy the API. I is licensed under the [MIT License](https://opensource.org/licenses/MIT). The Spawn-REST API is currently in beta and is subject to change, but we will try to keep the changes to a minimum. Please report any issues or bugs you encounter.
 
 ## Contributor installation
 
@@ -102,7 +102,7 @@ curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/createAppUser 
 ```
 
 To check if a user is already created, you can use the isUser method. It will return a boolean.
-```bash
+```
 curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/isUser \
 -H "Content-Type: application/json" \
 -d '{"app_id": TEST_APP_ID, 
@@ -216,8 +216,6 @@ curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/renameAddOn \
   "secret": TEST_APP_SECRET,
   "add_on_name": ADD_ON_NAME,
   "new_add_on_name": NEW_ADD_ON_NAME}'
-
-const is_renamed = await selas.renameAddOn('User1/landscape add-on', 'forest add-on');
 
 curl -m 70 -X POST https://europe-west1-scrypr.cloudfunctions.net/shareAddOn \
 -H "Content-Type: application/json" \

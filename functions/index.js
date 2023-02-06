@@ -11,7 +11,7 @@ const run_config= {timeoutSeconds: 60, memory: "128MB"}
 
 exports.helloWorld = functions.runWith(run_config).region(region).https.onRequest((request, response) => {
   //functions.runWith(run_config).region(region).logger.info("Hello logs!", { structuredData: true });
-  return response.send("Hello from Spawn!");
+    return response.send("Hello from Spawn!");
 });
 
 exports.getServiceList = functions.runWith(run_config).region(region).https.onRequest(
@@ -28,8 +28,12 @@ exports.getServiceList = functions.runWith(run_config).region(region).https.onRe
     const client = await selas.createSelasClient(credentials);
 
     response.set("Content-Type", "application/json");
-
-    return response.send(await client.getServiceList());
+    try{
+      return response.send(await client.getServiceList());
+    }
+    catch(err){
+      response.send(err);
+    }
   }
 );
 
@@ -47,7 +51,12 @@ exports.getAddOnList = functions.runWith(run_config).region(region).https.onRequ
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.getAddOnList());
+  try{
+    return response.send(await client.getAddOnList());
+  }
+  catch(err){
+    response.send(err);
+  }
 });
 
 /***************  USER METHODS  ***************/
@@ -61,7 +70,12 @@ exports.createAppUser = functions.runWith(run_config).region(region).https.onReq
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.createAppUser(request.body["app_user_external_id"]));
+  try{
+    return response.send(await client.createAppUser(request.body["app_user_external_id"]));
+  }
+  catch(err){
+    response.send(err);
+  }
 });
 
 exports.isUser = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
@@ -73,7 +87,12 @@ exports.isUser = functions.runWith(run_config).region(region).https.onRequest(as
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.isUser(request.body["app_user_external_id"]));
+  try{
+    return response.send(await client.isUser(request.body["app_user_external_id"]));
+  }
+  catch(err){
+    response.send(err);
+  }
 });
 
 exports.createToken = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
@@ -85,9 +104,12 @@ exports.createToken = functions.runWith(run_config).region(region).https.onReque
 
   response.set("Content-Type", "application/json");
 
-  return response.send(
-    await client.createToken(request.body["app_user_external_id"])
-  );
+  try{
+    return response.send(await client.createToken(request.body["app_user_external_id"]));
+  }
+  catch(err){
+    response.send(err);
+  }
 });
 
 exports.deleteAllTokenOfAppUser = functions.runWith(run_config).region(region).https.onRequest(
@@ -100,9 +122,12 @@ exports.deleteAllTokenOfAppUser = functions.runWith(run_config).region(region).h
 
     response.set("Content-Type", "application/json");
 
-    return response.send(
-      await client.deleteAllTokenOfAppUser(request.body["app_user_external_id"])
-    );
+    try{
+      return response.send(await client.deleteAllTokenOfAppUser(request.body["app_user_external_id"]));
+    }
+    catch(err){
+      response.send(err);
+    }
   }
 );
 
@@ -116,9 +141,12 @@ exports.getAppUserToken = functions.runWith(run_config).region(region).https.onR
 
     response.set("Content-Type", "application/json");
 
-    return response.send(
-      await client.getAppUserToken(request.body["app_user_external_id"])
-    );
+    try{
+      return response.send(await client.getAppUserToken(request.body["app_user_external_id"]));
+    }
+    catch(err){
+      response.send(err);
+    }
   }
 );
 
@@ -133,7 +161,12 @@ exports.setCredit = functions.runWith(run_config).region(region).https.onRequest
 
   amount = await client.setCredit(request.body["app_user_external_id"], request.body["amount"]);
 
-  return response.send({amount});
+  try{
+    return response.send({amount});
+  }
+  catch(err){
+    response.send(err);
+  }
 });
 
 exports.getAppUserCredits = functions.runWith(run_config).region(region).https.onRequest(
@@ -147,7 +180,12 @@ exports.getAppUserCredits = functions.runWith(run_config).region(region).https.o
     response.set("Content-Type", "application/json");
 
     amount = await client.getAppUserCredits(request.body["app_user_external_id"]);
-    return response.send({amount});
+    try{
+      return response.send({amount});
+    }
+    catch(err){
+      response.send(err);
+    }
   }
 );
 
@@ -160,14 +198,18 @@ exports.getAppUserJobHistory = functions.runWith(run_config).region(region).http
     });
 
     response.set("Content-Type", "application/json");
-
-    return response.send(
-      await client.getAppUserJobHistory(
-        request.body["app_user_external_id"],
-        request.body["p_limit"],
-        request.body["p_offset"]
-      )
-    );
+    try{
+      return response.send(
+        await client.getAppUserJobHistory(
+          request.body["app_user_external_id"],
+          request.body["p_limit"],
+          request.body["p_offset"]
+        )
+      );
+    }
+    catch(err){
+      response.send(err);
+    }
   }
 );
 
@@ -181,13 +223,17 @@ exports.shareAddOn = functions.runWith(run_config).region(region).https.onReques
   });
 
   response.set("Content-Type", "application/json");
-
-  return response.send(
-    await client.shareAddOn(
-      request.body["add_on_name"],
-      request.body["app_user_external_id"]
-    )
-  );
+  try{
+    return response.send(
+      await client.shareAddOn(
+        request.body["add_on_name"],
+        request.body["app_user_external_id"]
+      )
+    );
+  }
+  catch(err){
+    response.send(err);
+  }
 });
 
 exports.deleteAddOn = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
@@ -199,7 +245,12 @@ exports.deleteAddOn = functions.runWith(run_config).region(region).https.onReque
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.deleteAddOn(request.body["add_on_name"]));
+  try{
+    return response.send(await client.deleteAddOn(request.body["add_on_name"]));
+  }
+  catch(err){
+    response.send(err);
+  }  
 });
 
 exports.renameAddOn = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
@@ -211,12 +262,17 @@ exports.renameAddOn = functions.runWith(run_config).region(region).https.onReque
 
   response.set("Content-Type", "application/json");
 
-  return response.send(
-    await client.renameAddOn(
-      request.body["add_on_name"],
-      request.body["new_add_on_name"]
-    )
-  );
+  try{
+    return response.send(
+      await client.renameAddOn(
+        request.body["add_on_name"],
+        request.body["new_add_on_name"]
+      )
+    );
+  }
+  catch(err){
+    response.send(err);
+  }  
 });
 
 exports.publishAddOn = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
@@ -228,24 +284,32 @@ exports.publishAddOn = functions.runWith(run_config).region(region).https.onRequ
 
   response.set("Content-Type", "application/json");
 
-  return response.send(await client.publishAddOn(request.body["add_on_name"]));
+  try{
+    return response.send(await client.publishAddOn(request.body["add_on_name"]));
+  }
+  catch(err){
+    response.send(err);
+  }  
 });
 
-exports.unpublishAddOn = functions.runWith(run_config).region(region).https.onRequest(
-  async (request, response) => {
-    const client = await selas.createSelasClient({
-      app_id: request.body["app_id"],
-      key: request.body["key"],
-      secret: request.body["secret"],
-    });
+exports.unpublishAddOn = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],
+  });
 
-    response.set("Content-Type", "application/json");
+  response.set("Content-Type", "application/json");
 
+  try{
     return response.send(
       await client.unpublishAddOn(request.body["add_on_name"])
     );
   }
-);
+  catch(err){
+    response.send(err);
+  }  
+});
 
 /***************  JOB METHODS  ***************/
 
@@ -257,34 +321,39 @@ exports.getResult = functions.runWith(run_config).region(region).https.onRequest
   });
 
   response.set("Content-Type", "application/json");
-
-  return response.send(await client.getResult(request.body["job_id"]));
+  try{
+    return response.send(await client.getResult(request.body["job_id"]));
+  }
+  catch(err){
+    response.send(err);
+  }  
 });
 
-exports.costStableDiffusion = functions.runWith(run_config).region(region).https.onRequest(
-  async (request, response) => {
-    var credentials = {
-      app_id: request.body["app_id"],
-      key: request.body["key"],
-      secret: request.body["secret"],
-    };
+exports.costStableDiffusion = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],
+  };
 
-    if ("app_user_external_id" in request.body)
-      credentials["app_user_external_id"] =
-        request.body["app_user_external_id"];
+  if ("app_user_external_id" in request.body)
+    credentials["app_user_external_id"] =
+      request.body["app_user_external_id"];
 
-    const client = await selas.createSelasClient(credentials);
+  const client = await selas.createSelasClient(credentials);
 
-    response.set("Content-Type", "application/json");
-
+  response.set("Content-Type", "application/json");
+  try{
     const cost = await client.costStableDiffusion(
       request.body["prompt"],
       request.body
     );
-
     return response.send({ cost });
   }
-);
+  catch(err){
+    response.send(err);
+  }  
+});
 
 exports.runStableDiffusion = functions.runWith(run_config).region(region).https.onRequest(
   async (request, response) => {
@@ -311,26 +380,32 @@ exports.runStableDiffusion = functions.runWith(run_config).region(region).https.
     var param = request.body;
     param["callback"] = my_callback;
 
-    await client.runStableDiffusion(request.body["prompt"], param);
+    try{
+      await client.runStableDiffusion(request.body["prompt"], param);
+    }
+    catch(err){
+      response.send(err);
+    } 
+
   }
 );
 
-exports.costPatchTrainer = functions.runWith(run_config).region(region).https.onRequest(
-  async (request, response) => {
-    var credentials = {
-      app_id: request.body["app_id"],
-      key: request.body["key"],
-      secret: request.body["secret"],
-    };
+exports.costPatchTrainer = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],
+  };
 
-    if ("app_user_external_id" in request.body)
-      credentials["app_user_external_id"] =
-        request.body["app_user_external_id"];
+  if ("app_user_external_id" in request.body)
+    credentials["app_user_external_id"] =
+      request.body["app_user_external_id"];
 
-    const client = await selas.createSelasClient(credentials);
+  const client = await selas.createSelasClient(credentials);
 
-    response.set("Content-Type", "application/json");
+  response.set("Content-Type", "application/json");
 
+  try{
     const cost = await client.costPatchTrainer(
       request.body["dataset"],
       request.body["patch_name"],
@@ -339,33 +414,36 @@ exports.costPatchTrainer = functions.runWith(run_config).region(region).https.on
 
     return response.send({ cost });
   }
-);
+  catch(err){
+    response.send(err);
+  } 
+});
 
-exports.runPatchTrainer = functions.runWith(run_config).region(region).https.onRequest(
-  async (request, response) => {
-    var credentials = {
-      app_id: request.body["app_id"],
-      key: request.body["key"],
-      secret: request.body["secret"],
-    };
+exports.runPatchTrainer = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
+  var credentials = {
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],
+  };
 
-    if ("app_user_external_id" in request.body)
-      credentials["app_user_external_id"] =
-        request.body["app_user_external_id"];
+  if ("app_user_external_id" in request.body)
+    credentials["app_user_external_id"] =
+      request.body["app_user_external_id"];
 
-    const client = await selas.createSelasClient(credentials);
+  const client = await selas.createSelasClient(credentials);
 
-    response.set("Content-Type", "application/json");
+  response.set("Content-Type", "application/json");
 
-    function my_callback(feedback) {
-      if ("result" in feedback) {
-        return response.send(feedback.result);
-      }
+  function my_callback(feedback) {
+    if ("result" in feedback) {
+      return response.send(feedback.result);
     }
+  }
 
-    var param = request.body;
-    param["callback"] = my_callback;
+  var param = request.body;
+  param["callback"] = my_callback;
 
+  try{
     return response.send(
       await client.runPatchTrainer(
         request.body["dataset"],
@@ -374,20 +452,26 @@ exports.runPatchTrainer = functions.runWith(run_config).region(region).https.onR
       )
     );
   }
-);
+  catch(err){
+    response.send(err);
+  } 
+});
 
-exports.getCountActiveWorker = functions.runWith(run_config).region(region).https.onRequest(
-  async (request, response) => {
-    const client = await selas.createSelasClient({
-      app_id: request.body["app_id"],
-      key: request.body["key"],
-      secret: request.body["secret"],
-    });
+exports.getCountActiveWorker = functions.runWith(run_config).region(region).https.onRequest(async (request, response) => {
+  const client = await selas.createSelasClient({
+    app_id: request.body["app_id"],
+    key: request.body["key"],
+    secret: request.body["secret"],
+  });
 
-    response.set("Content-Type", "application/json");
+  response.set("Content-Type", "application/json");
 
+  try{
     const count = await client.getCountActiveWorker();
 
     return response.send({ count });
   }
-);
+  catch(err){
+    response.send(err);
+  } 
+});
